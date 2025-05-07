@@ -1,20 +1,15 @@
 package org.example.pages;
 
 
-import org.example.utils.GPT4AllLocatorHelper;
+import org.example.utils.AILocator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class LoginPage {
     private final WebDriver driver;
-    private final GPT4AllLocatorHelper aiHelper;
+    private final AILocator aiHelper;
 
-//    public LoginPage(WebDriver driver, AILocatorHelper aiHelper) {
-//        this.driver = driver;
-//        this.aiHelper = aiHelper;
-//    }
-
-    public LoginPage(WebDriver driver, GPT4AllLocatorHelper aiHelper) {
+    public LoginPage(WebDriver driver, AILocator aiHelper) {
         this.driver = driver;
         this.aiHelper = aiHelper;
     }

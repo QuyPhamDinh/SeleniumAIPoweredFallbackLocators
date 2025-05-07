@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GPT4AllLocatorHelper {
+public class GPT4AllLocatorHelper implements AILocator {
     private final WebDriver driver;
     private static final String GPT4ALL_API_URL = "http://localhost:4891/v1/chat/completions";
     // Change if needed
@@ -37,7 +37,6 @@ public class GPT4AllLocatorHelper {
             String prompt = "Given this HTML:\n" + html + "\nReturn only a raw CSS or XPath selector for " + description + " . Do not include any quotes, backticks, code block, explanation, or extra characters in your response.";
 
             String suggestion = queryGpt4All(prompt);
-
             if (suggestion == null || suggestion.isEmpty()) {
                 throw new RuntimeException("[AI] No suggestion received from GPT4All");
             }

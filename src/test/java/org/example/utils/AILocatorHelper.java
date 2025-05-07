@@ -8,7 +8,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class AILocatorHelper {
+public class AILocatorHelper implements AILocator {
     private final WebDriver driver;
     private final OpenAiService aiService;
 
