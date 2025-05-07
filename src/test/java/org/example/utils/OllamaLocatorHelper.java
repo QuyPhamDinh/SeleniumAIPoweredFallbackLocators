@@ -98,5 +98,43 @@ public class OllamaLocatorHelper implements AILocator {
         }
     }
 
+    public Map<String, By> findMultipleWithFallback(Map<String, String> keysToDescriptions, By scopeLocator) {
+        Map<String, By> result = new HashMap<>();
+
+        String html;
+        try {
+            html = driver.findElement(scopeLocator).getAttribute("outerHTML");
+        } catch (Exception e) {
+            System.err.println("[AI] Scope element - " + scopeLocator.toString() + " - not found, falling back to <body>");
+            html = driver.findElement(By.tagName("body")).getAttribute("outerHTML");
+        }
+
+        // Prompt construction
+        StringBuilder promptBuilder = new StringBuilder("Given the following HTML:\n")
+                .append(html)
+                .append("\nProvide a plain JSON object mapping the following UI elements to their CSS or XPath selectors:\n");
+
+        keysToDescriptions.forEach((key, desc) ->
+                promptBuilder.append(key).append(": ").append(desc).append("\n"));
+
+        // Strongly discourage Markdown or formatting
+        promptBuilder.append("Respond ONLY with a JSON object. NO markdown (no triple backticks), NO extra explanation, NO quotes around keys if unnecessary, and NO surrounding text.");
+//        System.out.println("prompt : " + promptBuilder.toString());
+        String response = queryOllama(promptBuilder.toString());
+        System.out.println("Ollama raw response: " + response);
+
+        try {
+            Map<String, String> selectors = mapper.readValue(response, Map.class);
+            for (Map.Entry<String, String> entry : selectors.entrySet()) {
+                String selector = entry.getValue().trim().replace("`", "");
+                By by = selector.startsWith("//") ? By.xpath(selector) : By.cssSelector(selector);
+                result.put(entry.getKey(), by);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("[AI] Failed to parse JSON from Ollama response", e);
+        }
+
+        return result;
+    }
 }
 

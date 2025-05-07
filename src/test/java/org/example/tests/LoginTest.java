@@ -5,6 +5,7 @@ import org.example.base.BaseTest;
 import org.example.pages.LoginPage;
 import org.example.utils.AILocator;
 import org.example.utils.GPT4AllLocatorHelper;
+import org.example.utils.PageHelper;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertTrue;
@@ -20,9 +21,11 @@ public class LoginTest extends BaseTest {
         AILocator aiHelper = new GPT4AllLocatorHelper(driver);
         LoginPage loginPage = new LoginPage(driver, aiHelper);
 
-        loginPage.login("aitest", "8i@Testing");
+        String userName = "aitest";
+        loginPage.login(userName, "8i@Testing");
 
-        assertTrue(driver.getPageSource().contains("Hello aitest!"));
+        boolean textAppeared = PageHelper.waitForTextAppear(driver, userName, 10);
+        assertTrue(textAppeared);
     }
 
 }
