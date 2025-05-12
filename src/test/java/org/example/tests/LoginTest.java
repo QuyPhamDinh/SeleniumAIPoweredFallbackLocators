@@ -16,8 +16,7 @@ public class LoginTest extends BaseTest {
     @Test
     public void testLoginHybridAI() {
         driver.get("http://eaapp.somee.com/Account/Login");
-
-//        AILocatorHelper aiHelper = new AILocatorHelper(driver, Constants.OPENAI_API_KEY);
+        
         AILocator aiHelper = new GPT4AllLocatorHelper(driver);
         LoginPage loginPage = new LoginPage(driver, aiHelper);
 

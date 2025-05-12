@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  selenium-hub:
+    image: seleniarm/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  chrome:
+    image: seleniarm/node-chromium:latest
+    container_name: selenium-chrome-node
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_SESSION_TIMEOUT=60
+    volumes:
+      - /dev/shm:/dev/shm
+    shm_size: "2gb"
+    ports:
+      - "6900:5900"
+
+  firefox:
+    image: seleniarm/node-firefox:latest
+    container_name: selenium-firefox-node
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_SESSION_TIMEOUT=60
+    volumes:
+      - /dev/shm:/dev/shm
+    shm_size: "2gb"
+    ports:
+      - "6901:5900"
+
+  test-runner:
+    image: selenium_ai  # Use the image you built
+    depends_on:
+      - selenium-hub
+    volumes:
+      - .:/app  # Mount the current directory (project root) to /app
+    working_dir: /app
+    command: mvn test -Dremote.url=http://selenium-hub:4444/wd/hub
+    environment:
+      - DISPLAY=:99 # May not be needed for headless
+      - OPENAI_API_KEY=${OPENAI_API_KEY} # If you need this
